@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-_CI badges added once workflows land._
+[![Backend CI](https://github.com/ShreyasUpadhyaya/decision-ledger/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/ShreyasUpadhyaya/decision-ledger/actions/workflows/backend-tests.yml)
 
 DecisionLedger is a backend service and dashboard that evaluate checkout and order
 requests against configurable business rules and return a decision you can explain and
