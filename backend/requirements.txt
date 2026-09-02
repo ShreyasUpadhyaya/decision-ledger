@@ -18,7 +18,7 @@ pymongo>=4.7
 # --- Authoritative ruleset store (required) -----------------------------------
 # Versioned, Fernet-encrypted, audited ruleset storage in MongoDB.
 cryptography>=42.0
-python-dotenv>=1.0
+python-dotenv>=1.2.3
 
 # --- LLM & RAG (optional) ------------------------------------------------------
 # The platform runs fully without these installed: the explainer, NL->rule generator,
