@@ -1,0 +1,51 @@
+{
+  "ruleset_id": "de.fraud",
+  "version": 1,
+  "status": "PUBLISHED",
+  "market": "DE",
+  "decision_type": "FRAUD",
+  "score_fact": "computed.fraud_score",
+  "verdict_severity": ["CLEAR", "REVIEW", "BLOCK"],
+  "composite_class": {
+    "CLEAR": "APPROVE_CLASS",
+    "REVIEW": "REFER_CLASS",
+    "BLOCK": "DECLINE_CLASS"
+  },
+  "default_outcome": { "verdict": "CLEAR", "reason_codes": [] },
+  "rules": [
+    {
+      "id": "FD-010", "phase": "GATE", "priority": 10, "enabled": true,
+      "when": { "fact": "fraud.device_on_global_blocklist", "op": "IS_TRUE" },
+      "then": { "verdict": "BLOCK", "terminal": true, "reason_codes": ["DEVICE_BLOCKLISTED"] }
+    },
+    {
+      "id": "FD-110", "phase": "SCORING", "priority": 110, "enabled": true,
+      "when": { "fact": "fraud.velocity_orders_40m", "op": "GTE", "value": 3 },
+      "then": { "score_delta": 40, "reason_codes": ["VELOCITY_ANOMALY"] }
+    },
+    {
+      "id": "FD-115", "phase": "SCORING", "priority": 115, "enabled": true,
+      "when": { "fact": "fraud.shipping_address_count_40m", "op": "GTE", "value": 2 },
+      "then": { "score_delta": 20, "reason_codes": ["MULTI_ADDRESS_ANOMALY"] }
+    },
+    {
+      "id": "FD-120", "phase": "SCORING", "priority": 120, "enabled": true,
+      "when": { "fact": "fraud.device_fingerprint_reuse_count", "op": "GTE", "value": 5 },
+      "then": { "score_delta": 30, "reason_codes": ["FINGERPRINT_REUSE"] }
+    },
+    {
+      "id": "FD-210", "phase": "TERMS", "priority": 210, "enabled": true,
+      "when": { "fact": "computed.fraud_score", "op": "GTE", "value": 80 },
+      "then": { "verdict": "BLOCK", "terminal": true, "reason_codes": ["FRAUD_SCORE_CRITICAL"] }
+    },
+    {
+      "id": "FD-220", "phase": "TERMS", "priority": 220, "enabled": true,
+      "when": { "fact": "computed.fraud_score", "op": "GTE", "value": 30 },
+      "then": {
+        "verdict": "REVIEW", "terminal": true,
+        "terms": { "sla_hours": 4 },
+        "reason_codes": ["FRAUD_SCORE_ELEVATED"]
+      }
+    }
+  ]
+}

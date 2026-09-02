@@ -1,0 +1,247 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ===========================================================================
+   DecisionLedger — "Decision Cockpit" design system
+   Brand: Deutsche Telekom Magenta (#E20074). Dark is the hero surface; light is
+   a clean, still-branded fallback. Verdict colours are semantic and shared by
+   badges, gauges, and the trace pipeline.
+   =========================================================================== */
+
+:root {
+  --radius: 0.75rem;
+
+  --background: oklch(0.99 0.003 330);
+  --foreground: oklch(0.18 0.02 320);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.02 320);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 320);
+
+  --primary: oklch(0.585 0.243 352);          /* DT magenta */
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.965 0.006 330);
+  --secondary-foreground: oklch(0.24 0.02 320);
+  --muted: oklch(0.965 0.006 330);
+  --muted-foreground: oklch(0.52 0.02 322);
+  --accent: oklch(0.955 0.02 340);
+  --accent-foreground: oklch(0.30 0.10 350);
+  --destructive: oklch(0.577 0.245 27.325);
+
+  --border: oklch(0.905 0.008 330);
+  --input: oklch(0.9 0.008 330);
+  --ring: oklch(0.585 0.243 352);
+
+  /* Shared brand + verdict palette (theme-independent, used inline by JS/SVG) */
+  --brand: oklch(0.585 0.243 352);
+  --brand-glow: oklch(0.585 0.243 352 / 0.35);
+  --clear: oklch(0.68 0.16 155);
+  --caution: oklch(0.79 0.15 78);
+  --refer: oklch(0.72 0.18 45);
+  --block: oklch(0.62 0.23 25);
+
+  --chart-1: var(--brand);
+  --chart-2: var(--clear);
+  --chart-3: var(--caution);
+  --chart-4: var(--refer);
+  --chart-5: var(--block);
+
+  --grid-line: oklch(0.55 0.02 330 / 0.05);
+  --panel-highlight: oklch(1 0 0 / 0.6);
+}
+
+.dark {
+  --background: oklch(0.155 0.014 318);
+  --foreground: oklch(0.97 0.005 330);
+  --card: oklch(0.195 0.016 316);
+  --card-foreground: oklch(0.97 0.005 330);
+  --popover: oklch(0.205 0.017 316);
+  --popover-foreground: oklch(0.97 0.005 330);
+
+  --primary: oklch(0.66 0.235 352);
+  --primary-foreground: oklch(0.14 0.02 320);
+  --secondary: oklch(0.25 0.016 316);
+  --secondary-foreground: oklch(0.97 0.005 330);
+  --muted: oklch(0.245 0.014 316);
+  --muted-foreground: oklch(0.72 0.02 322);
+  --accent: oklch(0.3 0.05 344);
+  --accent-foreground: oklch(0.95 0.02 344);
+  --destructive: oklch(0.7 0.19 22);
+
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 13%);
+  --ring: oklch(0.66 0.235 352);
+
+  --brand: oklch(0.68 0.235 352);
+  --brand-glow: oklch(0.68 0.235 352 / 0.45);
+  --clear: oklch(0.74 0.16 158);
+  --caution: oklch(0.82 0.15 82);
+  --refer: oklch(0.75 0.18 48);
+  --block: oklch(0.68 0.22 22);
+
+  --chart-1: var(--brand);
+  --chart-2: var(--clear);
+  --chart-3: var(--caution);
+  --chart-4: var(--refer);
+  --chart-5: var(--block);
+
+  --grid-line: oklch(0.85 0.02 330 / 0.05);
+  --panel-highlight: oklch(1 0 0 / 0.06);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-brand: var(--brand);
+  --color-clear: var(--clear);
+  --color-caution: var(--caution);
+  --color-refer: var(--refer);
+  --color-block: var(--block);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+
+  /* Animations exposed as Tailwind utilities (animate-*) */
+  --animate-reveal: reveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-glow: glow 3s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.5s linear infinite;
+  --animate-pop: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+  }
+}
+
+/* --- Ambient cockpit background: magenta aurora + fine grid ---------------- */
+.cockpit-bg {
+  position: relative;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 15% -8%, var(--brand-glow), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 100% 0%, oklch(0.6 0.18 300 / 0.18), transparent 55%);
+}
+.cockpit-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: linear-gradient(to bottom, black, transparent 75%);
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 75%);
+}
+
+/* --- Reusable surface treatments ------------------------------------------ */
+.glass {
+  background: color-mix(in oklch, var(--card) 82%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+}
+
+.brand-gradient-text {
+  background: linear-gradient(100deg, var(--brand), oklch(0.72 0.2 320));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glow-ring {
+  box-shadow: 0 0 0 1px var(--border), 0 8px 40px -12px var(--brand-glow);
+}
+
+.hover-lift {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklch, var(--brand) 40%, var(--border));
+}
+
+/* --- Keyframes ------------------------------------------------------------- */
+@keyframes reveal {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); filter: blur(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 30px -8px var(--brand-glow); }
+  50%      { box-shadow: 0 0 55px 0px var(--brand-glow); }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+/* Staggered entrance helper for grids */
+.stagger > * { animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger > *:nth-child(2) { animation-delay: 0.10s; }
+.stagger > *:nth-child(3) { animation-delay: 0.16s; }
+.stagger > *:nth-child(4) { animation-delay: 0.22s; }
+.stagger > *:nth-child(5) { animation-delay: 0.28s; }
+
+.typewriter-caret::after {
+  content: "▌";
+  margin-left: 1px;
+  color: var(--brand);
+  animation: blink 1s step-end infinite;
+}
+
+/* Thin, on-brand scrollbars inside panels */
+.thin-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in oklch, var(--brand) 30%, transparent);
+  border-radius: 99px;
+}
+.thin-scroll::-webkit-scrollbar-track { background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, .stagger > * { animation: none !important; }
+}

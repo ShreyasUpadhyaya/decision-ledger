@@ -1,0 +1,28 @@
+# --- Root-level safety net -------------------------------------------------
+# The per-project .gitignores (backend/.gitignore, frontend/.gitignore) cover
+# everything specific to each stack. This file catches anything at the repo
+# root and defensively excludes files from this machine's private demo-prep
+# workspace that must never end up in this public repo, even by accident.
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Env files anyone might drop at the root by habit
+.env
+.env.local
+*.env
+
+# This repo's own unattended-rollout automation control directory — internal
+# tooling used to build this history, not part of the project itself.
+.rollout/
+
+# Defensive: private recording/demo-prep docs from the source workspace this
+# repo was curated from. They are not part of this repo and never should be.
+RECORDING.md
+PITCH_RECORDING.md

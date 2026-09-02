@@ -1,0 +1,37 @@
+# --- Core (required) ---------------------------------------------------------
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+pydantic-settings>=2.2
+rule-engine>=5.0
+
+# --- Auth (required) ---------------------------------------------------------
+# MongoDB-backed users, bcrypt password hashing, HS256 JWT session tokens.
+# NOTE: passlib 1.7.4 (its last release) reads bcrypt's removed __about__ attribute and
+# its backend probe trips bcrypt>=4.1's strict 72-byte check, so hashing crashes there.
+# Pin bcrypt to the 4.0.x line, which passlib supports.
+passlib[bcrypt]>=1.7
+bcrypt>=4.0,<4.1
+PyJWT>=2.8
+pymongo>=4.7
+
+# --- Authoritative ruleset store (required) -----------------------------------
+# Versioned, Fernet-encrypted, audited ruleset storage in MongoDB.
+cryptography>=42.0
+python-dotenv>=1.0
+
+# --- LLM & RAG (optional) ------------------------------------------------------
+# The platform runs fully without these installed: the explainer, NL->rule generator,
+# vector-fallback recommender, and rule search all fall back to deterministic offline
+# implementations. Install them (and set OPENAI_API_KEY) to enable the live LangChain
+# path and MongoDB Atlas Vector Search as the fallback index. langchain-mongodb brings
+# pymongo in, but it is already a hard dependency above (auth + ruleset store).
+langchain-core>=0.3
+langchain-openai>=0.2
+langchain-community>=0.3
+langchain-mongodb>=0.2
+
+# --- Testing -------------------------------------------------------------------
+pytest>=8.0
+httpx>=0.27
+mongomock>=4.1

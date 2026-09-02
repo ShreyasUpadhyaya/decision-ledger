@@ -1,0 +1,37 @@
+{
+  "ruleset_id": "de.payment-policy",
+  "version": 1,
+  "status": "PUBLISHED",
+  "market": "DE",
+  "decision_type": "PAYMENT_POLICY",
+  "score_fact": "computed.payment_risk",
+  "verdict_severity": ["ANY", "SEPA_ONLY", "PREPAY_ONLY"],
+  "composite_class": {
+    "ANY": "APPROVE_CLASS",
+    "SEPA_ONLY": "APPROVE_CLASS",
+    "PREPAY_ONLY": "APPROVE_CLASS"
+  },
+  "default_outcome": { "verdict": "ANY", "reason_codes": [] },
+  "rules": [
+    {
+      "id": "PP-110", "phase": "SCORING", "priority": 110, "enabled": true,
+      "when": { "fact": "bureau.score", "op": "LESS_THAN", "value": 560 },
+      "then": { "score_delta": 40, "reason_codes": ["LOW_BUREAU"] }
+    },
+    {
+      "id": "PP-115", "phase": "SCORING", "priority": 115, "enabled": true,
+      "when": { "fact": "account.days_past_due", "op": "GREATER_THAN", "value": 0 },
+      "then": { "score_delta": 30, "reason_codes": ["PAST_DUE_HISTORY"] }
+    },
+    {
+      "id": "PP-210", "phase": "TERMS", "priority": 210, "enabled": true,
+      "when": { "fact": "computed.payment_risk", "op": "GTE", "value": 50 },
+      "then": { "verdict": "PREPAY_ONLY", "terminal": true, "reason_codes": ["PAYMENT_RISK_HIGH"] }
+    },
+    {
+      "id": "PP-220", "phase": "TERMS", "priority": 220, "enabled": true,
+      "when": { "fact": "computed.payment_risk", "op": "GTE", "value": 20 },
+      "then": { "verdict": "SEPA_ONLY", "terminal": true, "reason_codes": ["PAYMENT_RISK_ELEVATED"] }
+    }
+  ]
+}

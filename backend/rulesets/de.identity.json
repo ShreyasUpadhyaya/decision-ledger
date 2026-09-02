@@ -1,0 +1,49 @@
+{
+  "ruleset_id": "de.identity",
+  "version": 1,
+  "status": "PUBLISHED",
+  "market": "DE",
+  "decision_type": "IDENTITY",
+  "score_fact": "computed.identity_risk",
+  "verdict_severity": ["PASS", "STEP_UP_KYC", "FAIL"],
+  "composite_class": {
+    "PASS": "APPROVE_CLASS",
+    "STEP_UP_KYC": "REFER_CLASS",
+    "FAIL": "DECLINE_CLASS"
+  },
+  "default_outcome": { "verdict": "PASS", "reason_codes": [] },
+  "rules": [
+    {
+      "id": "ID-010", "phase": "GATE", "priority": 10, "enabled": true,
+      "when": { "all": [
+        { "fact": "identity.document_type", "op": "IS_NULL" },
+        { "fact": "order.financed_amount", "op": "GREATER_THAN", "value": 0 }
+      ] },
+      "then": { "verdict": "FAIL", "terminal": true, "reason_codes": ["NO_ID_ON_FINANCED_ORDER"] }
+    },
+    {
+      "id": "ID-110", "phase": "SCORING", "priority": 110, "enabled": true,
+      "when": { "fact": "identity.match_score", "op": "LESS_THAN", "value": 0.7 },
+      "then": { "score_delta": 40, "reason_codes": ["LOW_FACE_MATCH"] }
+    },
+    {
+      "id": "ID-115", "phase": "SCORING", "priority": 115, "enabled": true,
+      "when": { "fact": "identity.liveness_check", "op": "IS_FALSE" },
+      "then": { "score_delta": 30, "reason_codes": ["LIVENESS_FAILED"] }
+    },
+    {
+      "id": "ID-210", "phase": "TERMS", "priority": 210, "enabled": true,
+      "when": { "fact": "computed.identity_risk", "op": "GTE", "value": 60 },
+      "then": { "verdict": "FAIL", "terminal": true, "reason_codes": ["IDENTITY_HIGH_RISK"] }
+    },
+    {
+      "id": "ID-220", "phase": "TERMS", "priority": 220, "enabled": true,
+      "when": { "fact": "computed.identity_risk", "op": "GTE", "value": 30 },
+      "then": {
+        "verdict": "STEP_UP_KYC", "terminal": true,
+        "terms": { "required_document": "SELFIE_WITH_ID" },
+        "reason_codes": ["IDENTITY_MEDIUM_RISK"]
+      }
+    }
+  ]
+}

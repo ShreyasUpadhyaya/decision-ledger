@@ -1,0 +1,67 @@
+# ---------------------------------------------------------------------------
+# DecisionLedger Decision Automation Platform — local orchestration.
+#   docker compose up --build
+# The API comes up on http://localhost:8000. All configuration is environment
+# driven; every value below has a safe default so `up` works with no .env file,
+# EXCEPT MongoDB: the JSON rule engine's authoritative ruleset repository requires a
+# reachable MongoDB (any deployment), and the vector-search fallback's Atlas backend
+# specifically requires MongoDB Atlas (self-hosted MongoDB does not support
+# $vectorSearch) — point MONGODB_URI at your own cluster for that.
+#
+# For local/demo use where Atlas isn't reachable, `mongo` below is a real local
+# MongoDB the authoritative ruleset repository can dual-write against (encryption,
+# versioning, audit all still genuinely happen) — just not Atlas Vector Search, so
+# VECTOR_BACKEND falls back to the dependency-free in-memory index automatically
+# (see app/stores/vector_index.py). `run.sh` runs only this service via Docker;
+# the API and frontend run as plain local processes for fast iteration.
+#   docker compose up -d mongo
+# ---------------------------------------------------------------------------
+services:
+  mongo:
+    image: mongo:7
+    container_name: decisionledger-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - decisionledger-mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: decisionledger-platform:latest
+    container_name: decisionledger-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Bindings pass through from the host shell / .env; defaults keep the LLM/vector
+      # paths offline-safe. MONGODB_URI and DECISION_LEDGER_ENCRYPTION_KEY have no safe
+      # default and must be supplied.
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      AUTH_SECRET: ${AUTH_SECRET:-dev-insecure-change-me}
+      MONGODB_URI: ${MONGODB_URI:?set MONGODB_URI to a reachable MongoDB (Atlas for vector search)}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-decision_ledger}
+      DECISION_LEDGER_ENCRYPTION_KEY: "${DECISION_LEDGER_ENCRYPTION_KEY:?set DECISION_LEDGER_ENCRYPTION_KEY - generate one with: python -c \"from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())\"}"
+      ENABLE_LLM_EXPLANATIONS: ${ENABLE_LLM_EXPLANATIONS:-true}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
+      VECTOR_BACKEND: ${VECTOR_BACKEND:-auto}
+      CORS_ORIGINS: ${CORS_ORIGINS:-["http://localhost:5173","http://127.0.0.1:5173"]}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:8000/health').status==200 else sys.exit(1)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  decisionledger-mongo-data:

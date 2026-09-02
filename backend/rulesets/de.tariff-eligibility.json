@@ -1,0 +1,37 @@
+{
+  "ruleset_id": "de.tariff-eligibility",
+  "version": 1,
+  "status": "PUBLISHED",
+  "market": "DE",
+  "decision_type": "TARIFF_ELIGIBILITY",
+  "score_fact": null,
+  "verdict_severity": ["APPROVE", "DOWNGRADE_OFFER", "REFER", "DECLINE"],
+  "composite_class": {
+    "APPROVE": "APPROVE_CLASS",
+    "DOWNGRADE_OFFER": "REFER_CLASS",
+    "REFER": "REFER_CLASS",
+    "DECLINE": "DECLINE_CLASS"
+  },
+  "default_outcome": { "verdict": "REFER", "reason_codes": ["NO_RULE_MATCHED"] },
+  "rules": [
+    {
+      "id": "TE-210", "phase": "TERMS", "priority": 210, "enabled": true,
+      "when": { "fact": "order.line_count", "op": "LTE", "value": 4 },
+      "then": { "verdict": "APPROVE", "terminal": true }
+    },
+    {
+      "id": "TE-220", "phase": "TERMS", "priority": 220, "enabled": true,
+      "when": { "fact": "order.line_count", "op": "BETWEEN", "value": [5, 6] },
+      "then": {
+        "verdict": "DOWNGRADE_OFFER", "terminal": true,
+        "terms": { "max_lines": 4 },
+        "reason_codes": ["LINE_COUNT_OVER_TIER"]
+      }
+    },
+    {
+      "id": "TE-230", "phase": "TERMS", "priority": 230, "enabled": true,
+      "when": { "fact": "order.line_count", "op": "GREATER_THAN", "value": 6 },
+      "then": { "verdict": "DECLINE", "terminal": true, "reason_codes": ["LINE_COUNT_EXCEEDED"] }
+    }
+  ]
+}

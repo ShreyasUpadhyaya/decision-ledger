@@ -1,0 +1,154 @@
+{
+  "ruleset_id": "de.device-financing",
+  "version": 1,
+  "status": "PUBLISHED",
+  "market": "DE",
+  "decision_type": "DEVICE_FINANCING",
+  "score_fact": "computed.risk_score",
+  "verdict_severity": ["APPROVE", "APPROVE_WITH_DEPOSIT", "REFER", "DECLINE"],
+  "composite_class": {
+    "APPROVE": "APPROVE_CLASS",
+    "APPROVE_WITH_DEPOSIT": "APPROVE_CLASS",
+    "REFER": "REFER_CLASS",
+    "DECLINE": "DECLINE_CLASS"
+  },
+  "default_outcome": { "verdict": "REFER", "reason_codes": ["NO_RULE_MATCHED"] },
+  "default_terms_by_verdict": {
+    "APPROVE": { "max_financed_amount": "order.financed_amount", "max_term_months": "order.term_months" }
+  },
+  "rules": [
+    {
+      "id": "DF-014", "phase": "GATE", "priority": 10, "enabled": true,
+      "when": { "all": [
+        { "fact": "account.days_past_due", "op": "GREATER_THAN", "value": 60 },
+        { "fact": "order.financed_amount", "op": "GREATER_THAN", "value": 0 }
+      ] },
+      "then": { "verdict": "DECLINE", "terminal": true, "reason_codes": ["ACTIVE_DELINQUENCY"] }
+    },
+    {
+      "id": "DF-100", "phase": "SCORING", "priority": 100, "enabled": true,
+      "when": { "all": [] },
+      "then": { "score_delta": 45, "reason_codes": ["BASE_SCORE"] }
+    },
+    {
+      "id": "DF-101", "phase": "SCORING", "priority": 101, "enabled": true,
+      "when": { "fact": "customer.tenure_months", "op": "GTE", "value": 24 },
+      "then": { "score_delta": 15, "reason_codes": ["TENURE_BONUS"] }
+    },
+    {
+      "id": "DF-105", "phase": "SCORING", "priority": 105, "enabled": true,
+      "when": { "all": [
+        { "fact": "account.days_past_due", "op": "EQUALS", "value": 0 },
+        { "fact": "customer.is_existing", "op": "IS_TRUE" }
+      ] },
+      "then": { "score_delta": 15, "reason_codes": ["CLEAN_HISTORY"] }
+    },
+    {
+      "id": "DF-107", "phase": "SCORING", "priority": 107, "enabled": true,
+      "when": { "fact": "bureau.score", "op": "BETWEEN", "value": [560, 640] },
+      "then": { "score_delta": -15, "reason_codes": ["THIN_BUREAU_BAND"] }
+    },
+    {
+      "id": "DF-108", "phase": "SCORING", "priority": 108, "enabled": true,
+      "when": { "fact": "bureau.score", "op": "LESS_THAN", "value": 560 },
+      "then": { "score_delta": -30, "reason_codes": ["VERY_LOW_BUREAU_SCORE"] }
+    },
+    {
+      "id": "DF-110", "phase": "SCORING", "priority": 110, "enabled": true,
+      "when": { "fact": "bureau.score", "op": "GTE", "value": 750 },
+      "then": { "score_delta": 15, "reason_codes": ["STRONG_BUREAU_BAND"] }
+    },
+    {
+      "id": "DF-120", "phase": "SCORING", "priority": 120, "enabled": true,
+      "when": { "fact": "order.financed_amount", "op": "GREATER_THAN", "value": 800 },
+      "then": { "score_delta": -5, "reason_codes": ["HIGH_TICKET_TIER1"] }
+    },
+    {
+      "id": "DF-121", "phase": "SCORING", "priority": 121, "enabled": true,
+      "when": { "fact": "order.financed_amount", "op": "GREATER_THAN", "value": 1000 },
+      "then": { "score_delta": -5, "reason_codes": ["HIGH_TICKET_TIER2"] }
+    },
+    {
+      "id": "DF-130", "phase": "SCORING", "priority": 130, "enabled": true,
+      "when": { "fact": "account.sepa_mandate_verified", "op": "IS_TRUE" },
+      "then": { "score_delta": 10, "reason_codes": ["VERIFIED_SEPA_MANDATE"] }
+    },
+    {
+      "id": "DF-140", "phase": "SCORING", "priority": 140, "enabled": true,
+      "when": { "all": [
+        { "fact": "identity.match_score", "op": "GTE", "value": 0.9 },
+        { "fact": "fraud.verdict", "op": "EQUALS", "value": "CLEAR" }
+      ] },
+      "then": { "score_delta": 10, "reason_codes": ["CLEAN_IDENTITY_AND_FRAUD"] }
+    },
+    {
+      "id": "DF-215", "phase": "TERMS", "priority": 215, "enabled": true,
+      "when": { "all": [
+        { "fact": "computed.risk_score", "op": "BETWEEN", "value": [55, 59] },
+        { "fact": "order.financed_amount", "op": "GREATER_THAN", "value": 1500 }
+      ] },
+      "then": {
+        "verdict": "APPROVE_WITH_DEPOSIT", "terminal": true,
+        "terms": { "deposit_pct": 35, "max_financed_amount": 1200, "max_term_months": 24 },
+        "reason_codes": ["HIGH_VALUE_MEDIUM_RISK"]
+      }
+    },
+    {
+      "id": "DF-201", "phase": "TERMS", "priority": 201, "enabled": true,
+      "when": { "fact": "computed.risk_score", "op": "GTE", "value": 70 },
+      "then": { "verdict": "APPROVE", "terminal": true }
+    },
+    {
+      "id": "DF-220", "phase": "TERMS", "priority": 220, "enabled": true,
+      "when": { "all": [
+        { "fact": "computed.risk_score", "op": "BETWEEN", "value": [40, 59] },
+        { "fact": "order.financed_amount", "op": "GREATER_THAN", "value": 600 }
+      ] },
+      "then": {
+        "verdict": "APPROVE_WITH_DEPOSIT", "terminal": true,
+        "terms": { "deposit_pct": 20, "max_financed_amount": 900, "max_term_months": 24 },
+        "reason_codes": ["MEDIUM_RISK_HIGH_TICKET"]
+      }
+    },
+    {
+      "id": "DF-240", "phase": "TERMS", "priority": 240, "enabled": true,
+      "when": { "fact": "computed.risk_score", "op": "LESS_THAN", "value": 20 },
+      "then": { "verdict": "DECLINE", "terminal": true, "reason_codes": ["VERY_HIGH_RISK"] }
+    },
+    {
+      "id": "OV-401", "phase": "OVERLAY", "priority": 401, "enabled": true,
+      "when": { "fact": "computed.signal_confidence", "op": "LESS_THAN", "value": 0.6 },
+      "then": { "verdict": "REFER", "reason_codes": ["SIGNAL_DEGRADED"] }
+    },
+    {
+      "id": "OV-410", "phase": "OVERLAY", "priority": 410, "enabled": true,
+      "when": { "none": [
+        { "fact": "customer.date_of_birth", "op": "AGE_IN_YEARS_GTE", "value": 21 }
+      ] },
+      "then": {
+        "verdict": "APPROVE_WITH_DEPOSIT",
+        "terms": { "max_financed_amount": 500 },
+        "reason_codes": ["YOUNG_ADULT_CAP"]
+      }
+    },
+    {
+      "id": "OV-420", "phase": "OVERLAY", "priority": 420, "enabled": true,
+      "when": { "fact": "market", "op": "EQUALS", "value": "DE" },
+      "then": { "terms": { "deposit_pct": 30 }, "reason_codes": ["DE_DEPOSIT_CAP"] }
+    },
+    {
+      "id": "DF-DEMO-490", "phase": "OVERLAY", "priority": 490, "enabled": true,
+      "when": { "all": [
+        { "fact": "order.financed_amount", "op": "GREATER_THAN", "value": 999999 },
+        { "fact": "customer.tenure_months", "op": "GTE", "value": 0 },
+        { "fact": "customer.is_existing", "op": "IS_TRUE" }
+      ] },
+      "then": {
+        "verdict": "APPROVE_WITH_DEPOSIT",
+        "terms": { "deposit_pct": 25 },
+        "reason_codes": ["PILOT_LAUNCH_DEVICE_PRECEDENT", "PILOT_LAUNCH_PRECEDENT", "PILOT_LAUNCH_APPROVED"]
+      },
+      "_demo_fixture_note": "The financed_amount > 999999 leg makes this compound condition permanently false, so it never fires as a real rule. Seeded only so the vector-search fallback (app/decision_service.py) has a genuine, findable historical precedent to recommend from for the demo_llm_fallback scenario — see RECORDING.md."
+    }
+  ]
+}
