@@ -1,15 +1,21 @@
 # DecisionLedger — Decision Automation Platform
 
-A backend + dashboard that evaluates checkout/order requests against configurable
-business rules and returns explainable, auditable decisions. Built for **The Talent
-Hack**, a 24-hour AI hackathon presented by Cursor and Deutsche Telekom Digital Labs
-(Top 5 of 9,000+ submissions).
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A deterministic four-phase rule engine (`GATE → SCORING → TERMS → OVERLAY`) is the
-single source of truth for every decision. Every response carries a full audit trace of
-which rule fired and why. An LLM/RAG layer only ever runs on the fallback path — when no
-rule matches anything — and every AI capability has a deterministic offline fallback, so
-the platform runs end-to-end with **no API keys configured at all**.
+_CI badges added once workflows land._
+
+DecisionLedger is a backend service and dashboard that evaluate checkout and order
+requests against configurable business rules and return a decision you can explain and
+audit. Every request runs through a deterministic four-phase rule engine
+(`GATE → SCORING → TERMS → OVERLAY`) that is the single source of truth for the
+outcome, and every response carries a full audit trace of which rule fired and why.
+
+An LLM/RAG layer runs only on the fallback path — when no rule matches the request at
+all — and every AI capability has a deterministic offline fallback, so the platform
+runs end to end with **no API keys configured at all**.
+
+It was built for **The Talent Hack**, a 24-hour AI hackathon presented by Cursor and
+Deutsche Telekom Digital Labs, where it placed in the top 5 of 9,000+ submissions.
 
 ## What's in this folder
 
@@ -35,14 +41,15 @@ for the dashboard.
 
 (On Windows, run this from **Git Bash**, not PowerShell/cmd.)
 
-This brings up, idempotently:
+The script is idempotent — re-run it any time — and brings up three things:
+
 1. A local MongoDB container (rulesets, users, audit log).
 2. The FastAPI backend on **http://127.0.0.1:8000** (API docs at `/docs`).
 3. The React dashboard on **http://localhost:5173**.
 
-First run auto-generates `backend/.env` from `backend/.env.example` with a fresh
-encryption key — nothing to configure by hand. Open **http://localhost:5173**, pick a
-scenario, and send a request.
+On the first run it generates `backend/.env` from `backend/.env.example` with a fresh
+encryption key, so there is nothing to configure by hand. Once everything is up, open
+**http://localhost:5173**, pick a scenario, and send a request.
 
 To stop everything:
 
