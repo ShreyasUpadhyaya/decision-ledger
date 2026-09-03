@@ -93,18 +93,40 @@ no OpenAI key, no network — running in under 2 seconds.
 Incoming request
       │
       ▼
-Evaluate with the JSON rule engine (deterministic, authoritative)
-      │
-      ├── Rule matched ───────────────────────► return the decision immediately
-      │
-      └── No rule matched anywhere
-             │
-             ▼
-      Vector search over the rule store
-             │
-             ├── Similar rule(s) above threshold ─► LLM recommendation + explanation + confidence
-             │
-             └── No semantic match ───────────────► configured safe default (e.g. REFER)
+┌─────────────────────────────────────────────────────────────────┐
+│ Serving layer — FastAPI shell                                    │
+│ JWT auth + RBAC · request validation · idempotency · enrichment  │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ Rule engine — deterministic, authoritative                       │
+│ 4 phases: GATE → SCORING → TERMS → OVERLAY                        │
+│                                                                 │
+│   ├── Rule matched ─────────────► return the decision immediately │
+│   │                                                             │
+│   └── No rule matched anywhere                                   │
+│          │                                                       │
+│          ▼                                                       │
+│   Vector search over the rule store                              │
+│          │                                                       │
+│          ├── Similar rule(s) above threshold                     │
+│          │      ─► LLM recommendation + explanation + confidence  │
+│          │                                                       │
+│          └── No semantic match ─► configured safe default (REFER) │
+└───────────────────────────────┬─────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ Persistence — one dual-write facade (RuleStore)                  │
+│                                                                 │
+│   Ruleset repository            Vector index                     │
+│   authoritative                 fallback-only, never             │
+│   versioned · Fernet-encrypted  authoritative                    │
+│   · audited (MongoDB)           (MongoDB Atlas / in-memory)      │
+│                                                                 │
+│   every write updates both stores in a single call              │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 Full detail in [backend/docs/ARCHITECTURE.md](backend/docs/ARCHITECTURE.md).
