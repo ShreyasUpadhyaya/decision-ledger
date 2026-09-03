@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 [![Backend CI](https://github.com/ShreyasUpadhyaya/decision-ledger/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/ShreyasUpadhyaya/decision-ledger/actions/workflows/backend-tests.yml)
+[![Frontend CI](https://github.com/ShreyasUpadhyaya/decision-ledger/actions/workflows/frontend-build.yml/badge.svg)](https://github.com/ShreyasUpadhyaya/decision-ledger/actions/workflows/frontend-build.yml)
 
 DecisionLedger is a backend service and dashboard that evaluate checkout and order
 requests against configurable business rules and return a decision you can explain and
