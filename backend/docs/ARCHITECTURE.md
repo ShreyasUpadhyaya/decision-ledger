@@ -1,5 +1,7 @@
 # DecisionLedger — Architecture
 
+> **See also:** [API.md](API.md) for the full endpoint reference.
+
 ## 1. Design goal
 
 A **configurable decision automation platform**: telecom e-commerce checkout orders are

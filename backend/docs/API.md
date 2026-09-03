@@ -1,5 +1,7 @@
 # DecisionLedger — REST API Specification
 
+> **See also:** [ARCHITECTURE.md](ARCHITECTURE.md) for the design rationale behind these endpoints.
+
 Base URL (local): `http://127.0.0.1:8000`
 Content type: `application/json` unless noted.
 All errors use an RFC-7807-style problem shape: `{type, title, status, detail, instance}`.
