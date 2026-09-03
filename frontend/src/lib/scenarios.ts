@@ -51,10 +51,12 @@ export interface Scenario {
   testSignals?: Record<string, Record<string, unknown>>;
 }
 
-// The three recording-ready demo scenarios (RECORDING.md) — one per branch of
-// app/decision_service.py's flow. Kept first in the list so they're the obvious pick on
-// camera; the rest of SCENARIOS below are the general worked examples from
-// verdict-example-scenarios.md.
+// The three demo scenarios, one per branch of app/decision_service.py's flow:
+// demo_rule_hit (a deterministic rule matches directly), demo_llm_fallback (no rule
+// matches, so vector search plus the LLM recommend a result), and demo_low_confidence
+// (the LLM's confidence falls below the gate, so a safe default is returned). Kept first
+// in the list so they're the obvious starting point; the rest of SCENARIOS below are
+// general worked examples covering other rule and input combinations.
 export const DEMO_SCENARIO_IDS = ["demo_rule_hit", "demo_llm_fallback", "demo_low_confidence"] as const;
 
 export const SCENARIOS: Scenario[] = [

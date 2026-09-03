@@ -148,7 +148,7 @@
         "terms": { "deposit_pct": 25 },
         "reason_codes": ["PILOT_LAUNCH_DEVICE_PRECEDENT", "PILOT_LAUNCH_PRECEDENT", "PILOT_LAUNCH_APPROVED"]
       },
-      "_demo_fixture_note": "The financed_amount > 999999 leg makes this compound condition permanently false, so it never fires as a real rule. Seeded only so the vector-search fallback (app/decision_service.py) has a genuine, findable historical precedent to recommend from for the demo_llm_fallback scenario — see RECORDING.md."
+      "_demo_fixture_note": "The financed_amount > 999999 leg makes this compound condition permanently false, so it never fires as a real rule. Seeded only so the vector-search fallback (app/decision_service.py) has a genuine, findable historical precedent to recommend from for the demo_llm_fallback scenario."
     }
   ]
 }
