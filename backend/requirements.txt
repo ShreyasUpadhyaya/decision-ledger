@@ -1,6 +1,6 @@
 # --- Core (required) ---------------------------------------------------------
 fastapi>=0.141.1
-uvicorn[standard]>=0.29
+uvicorn[standard]>=0.52.4
 pydantic>=2.6
 pydantic-settings>=2.2
 rule-engine>=5.0
